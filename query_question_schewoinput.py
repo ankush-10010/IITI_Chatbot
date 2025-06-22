@@ -7,18 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1BUx5mIoOrJeolSdFuasIHNjZ4X_260nX
 """
 
-!pip install faiss-cpu #While using CPu
-
-!pip install pdf2image
-!apt-get install -y poppler-utils
-!apt-get install -y tesseract-ocr
-!pip install pytesseract
-!pip install pillow
-!pip install openai
-!pip install reportlab
-
-!pip install pyngrok
-
 import torch
 import gc
 gc.collect()
