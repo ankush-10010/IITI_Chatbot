@@ -1,5 +1,4 @@
 torch
-numpy
 faiss-cpu
 sentence-transformers
 pillow
@@ -8,10 +7,11 @@ reportlab
 pytesseract
 openai
 requests
+httpx
+python-dotenv
+fastapi
+uvicorn
+pymongo
 google-auth
 google-auth-oauthlib
 google-api-python-client
-httpx
-fastapi
-uvicorn
-python-multipart
