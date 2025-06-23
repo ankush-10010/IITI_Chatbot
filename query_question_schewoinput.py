@@ -169,7 +169,7 @@ class QueryBot:
         }
 
         headers = {
-            "Authorization": f"Bearer {self.GROQ_API_KEY}",
+            "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
 
@@ -186,7 +186,7 @@ class QueryBot:
 
 class QuestionPaperBot:
     def __init__(self, groq_api_key=None):
-        self.api_key = groq_api_key or os.getenv(groq_api_key)
+        self.api_key = groq_api_key 
         self.client = OpenAI(api_key=self.api_key, base_url="https://api.groq.com/openai/v1")
 
     async def pdf_to_images(self, pdf_path):
@@ -430,7 +430,7 @@ from typing import List, Dict, Optional
 
 class Scheduler:
     def __init__(self, api_key: Optional[str] = None, model_name: str = "llama-3.1-8b-instant"):
-        self.GROQ_API_KEY = api_key or os.getenv("GROQ_API_KEY")
+        self.GROQ_API_KEY = groq_api_key
         if not self.GROQ_API_KEY:
             raise ValueError("GROQ_API_KEY not found. Please set it as an environment variable or pass it to the Scheduler constructor.")
 
@@ -716,7 +716,7 @@ import requests
 
 class RouterAgent:
     def __init__(self, groq_api_key=None, model="llama-3.1-8b-instant"):
-        self.api_key = groq_api_key or os.getenv(groq_api_key)
+        self.api_key = groq_api_key 
         self.api_url = groq_link
         self.model = model
 
@@ -748,7 +748,7 @@ class RouterAgent:
         # response = requests.post(self.api_url, headers=headers, json=payload,timeout=20)
         try:
           async with httpx.AsyncClient() as client:
-              response = await client.post(groq_link,headers=headers, json=payload, timeout=20)
+              response = await client.post(self.groq_link,headers=headers, json=payload, timeout=20)
           response.raise_for_status()
           data =  response.json()
           classification = data["choices"][0]["message"]["content"].strip().lower()
@@ -774,7 +774,7 @@ class RouterAgent:
             return "❌ Unable to classify the query. Please try rephrasing."
 
     async def classify_question_answer(self, prompt , file=None):
-          GROQ_API_URL=groq_link
+          GROQ_API_URL=self.groq_link
 
           headers = {"Authorization": f"Bearer {self.api_key}"}
           classification_prompt = f"""
@@ -843,7 +843,7 @@ class RouterAgent:
         aur ek daily ki schedule karne wali , so we will take the user prompt and see ki wo kiss type  ka
         schedule banana chah rha 1day or 1 week and call the fucntuons on that basis"""
         try:
-            scheduler_bot = Scheduler(groq_api_key)
+            scheduler_bot = Scheduler(self.api_key)
             result = await scheduler_bot.run_scheduler(prompt)
             return result
         except Exception as e:
@@ -891,8 +891,11 @@ app.add_middleware(
 # db = mongo_client["mydb"]
 # pdfs_collection = db["pdfs"]
 
+@app.get("/")
+def root():
+    return {"message": "🚀 IITI Chatbot backend is running!"}
 
-router_agent = RouterAgent(groq_api_key)
+router_agent = RouterAgent(self.api_key)
 #groq api wagera ham code ke andar hi fix kardenge (init ke time i mean)
 @app.post("/route")
 async def route_handler(
