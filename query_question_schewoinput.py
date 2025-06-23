@@ -748,7 +748,7 @@ class RouterAgent:
         # response = requests.post(self.api_url, headers=headers, json=payload,timeout=20)
         try:
           async with httpx.AsyncClient() as client:
-              response = await client.post(self.groq_link,headers=headers, json=payload, timeout=20)
+              response = await client.post(self.api_key,headers=headers, json=payload, timeout=20)
           response.raise_for_status()
           data =  response.json()
           classification = data["choices"][0]["message"]["content"].strip().lower()
