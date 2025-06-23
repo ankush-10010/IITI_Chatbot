@@ -1033,12 +1033,12 @@ async def route_handler(
         media_type="application/json"
     )
 
-import uvicorn
-from pyngrok import ngrok
-import nest_asyncio
-!ngrok authtoken ngrok_auth_token
-# Allow async in Colab
-nest_asyncio.apply()
+# import uvicorn
+# from pyngrok import ngrok
+# import nest_asyncio
+# !ngrok authtoken ngrok_auth_token
+# # Allow async in Colab
+# nest_asyncio.apply()
 
 # Start ngrok tunnel
 public_url = ngrok.connect(8000)
