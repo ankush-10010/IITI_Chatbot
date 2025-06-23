@@ -37,25 +37,21 @@ from concurrent.futures import ThreadPoolExecutor
 
 import httpx
 import io
+
 from pymongo import MongoClient
 import os
-from dotenv import load_dotenv
-
-# Load from .env file
-load_dotenv()
-
-# Now access variables
 mongo_uri = os.getenv("MONGO_URI")
 groq_api_key = os.getenv("GROQ_API_KEY")
 ngrok_auth_token = os.getenv("NGROK_AUTH_TOKEN")
 groq_link = os.getenv("GROQ_LINK")
+
 
 class QueryBot:
     def __init__(self,
                  embedding_model="all-MiniLM-L6-v2",
                  groq_api_key=groq_api_key,
                  model_name="llama-3.1-8b-instant",
-                 groq_api_url=groq_link):
+                 groq_api_url="https://api.groq.com/openai/v1/chat/completions"):
 
         # self.JSON_FILE = json_file
         self.EMBEDDING_MODEL = embedding_model
@@ -169,7 +165,7 @@ class QueryBot:
         }
 
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {self.GROQ_API_KEY}",
             "Content-Type": "application/json"
         }
 
@@ -186,7 +182,7 @@ class QueryBot:
 
 class QuestionPaperBot:
     def __init__(self, groq_api_key=None):
-        self.api_key = groq_api_key 
+        self.api_key =os.getenv("GROQ_API_KEY")
         self.client = OpenAI(api_key=self.api_key, base_url="https://api.groq.com/openai/v1")
 
     async def pdf_to_images(self, pdf_path):
@@ -258,7 +254,7 @@ Give your output in the same format as the input."""
         }
         try:
           async with httpx.AsyncClient() as client:
-                    response = await client.post(groq_link, headers=headers, json=payload, timeout=20)
+                    response = await client.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=20)
                     print("Groq API Raw Response:", response.status_code, response.text)
                     response.raise_for_status()
                     data = response.json()
@@ -298,7 +294,7 @@ Give your output in the same format as the input."""
         }
         try:
           async with httpx.AsyncClient() as client:
-                    response = await client.post(groq_link, headers=headers, json=payload, timeout=20)
+                    response = await client.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=20)
                     print("Groq API Raw Response:", response.status_code, response.text)
                     response.raise_for_status()
                     data = response.json()
@@ -411,14 +407,14 @@ Give your output in the same format as the input."""
         print("Generated Answer Text:\n", generated_text[:500])
         return self.text_to_formatted_pdf(generated_text)
 
-# question_bot=QuestionPaperBot(groq_api_key)
+# question_bot=QuestionPaperBot("gsk_XeRVOcvKlnGPiU2c5uqS")
 # question_bot.generate_question_paper("/content/Eco_Paper.pdf")
 
 # question_bot.generate_ans_paper("/content/question_paper.pdf")
 
 #how to use
   # """we will take the prompt and pdf from the user , with the prompt we will decide what bot to choose and in this case , what functon to choose (to generate question or answer)"""
-  # bot = QuestionPaperBot(groq_api_key)
+  # bot = QuestionPaperBot(groq_api_key="gsk_UZKlnGPiU2c5uqS")
   # bot.generate_question_paper(pdf_path="/content/Eco_Paper.pdf")
 
 import os
@@ -430,12 +426,12 @@ from typing import List, Dict, Optional
 
 class Scheduler:
     def __init__(self, api_key: Optional[str] = None, model_name: str = "llama-3.1-8b-instant"):
-        self.GROQ_API_KEY = groq_api_key
+        self.GROQ_API_KEY =os.getenv("GROQ_API_KEY")
         if not self.GROQ_API_KEY:
             raise ValueError("GROQ_API_KEY not found. Please set it as an environment variable or pass it to the Scheduler constructor.")
 
         self.MODEL_NAME = model_name
-        self.GROQ_API_URL = groq_link
+        self.GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
         self.TIME_ZONE = "Asia/Kolkata" # IST
 
     async def _query_groq(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7) -> str:
@@ -449,7 +445,7 @@ class Scheduler:
         }
         try:
           async with httpx.AsyncClient() as client:
-                    response = await client.post(groq_link, headers=headers, json=payload, timeout=20)
+                    response = await client.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=20)
                     print("Groq API Raw Response:", response.status_code, response.text)
                     response.raise_for_status()
                     data = response.json()
@@ -705,7 +701,7 @@ Ensure every scheduled item has a clear start and end time.
         except Exception as e:
             return {"error": f"Failed to generate schedule: {str(e)}"}
 
-# scheduler_bot=Scheduler(groq_api_key)
+# scheduler_bot=Scheduler("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")
 # scheduler_bot.main("i want to make a schedule for today , i have to go to gym for 2hours , study for 3 hours")
 
 import re
@@ -716,8 +712,8 @@ import requests
 
 class RouterAgent:
     def __init__(self, groq_api_key=None, model="llama-3.1-8b-instant"):
-        self.api_key = groq_api_key 
-        self.api_url = groq_link
+        self.api_key = os.getenv("GROQ_API_KEY")
+        self.api_url = "https://api.groq.com/openai/v1/chat/completions"
         self.model = model
 
     async def classify_prompt(self, user_prompt: str) -> str:
@@ -748,7 +744,7 @@ class RouterAgent:
         # response = requests.post(self.api_url, headers=headers, json=payload,timeout=20)
         try:
           async with httpx.AsyncClient() as client:
-              response = await client.post(self.api_key,headers=headers, json=payload, timeout=20)
+              response = await client.post("https://api.groq.com/openai/v1/chat/completions",headers=headers, json=payload, timeout=20)
           response.raise_for_status()
           data =  response.json()
           classification = data["choices"][0]["message"]["content"].strip().lower()
@@ -774,7 +770,7 @@ class RouterAgent:
             return "❌ Unable to classify the query. Please try rephrasing."
 
     async def classify_question_answer(self, prompt , file=None):
-          GROQ_API_URL=self.groq_link
+          GROQ_API_URL="https://api.groq.com/openai/v1/chat/completions"
 
           headers = {"Authorization": f"Bearer {self.api_key}"}
           classification_prompt = f"""
@@ -802,7 +798,7 @@ class RouterAgent:
               "max_tokens": 10
           }
 
-          # response = requests.post(groq_link, headers=headers, json=payload, timeout=20)
+          # response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=20)
           # response.raise_for_status()
           try:
             async with httpx.AsyncClient() as client:
@@ -887,13 +883,6 @@ app.add_middleware(
 )
 
 
-# mongo_client = motor.motor_asyncio.AsyncIOMotorClient(mongo_uri)
-# db = mongo_client["mydb"]
-# pdfs_collection = db["pdfs"]
-
-@app.get("/")
-def root():
-    return {"message": "🚀 IITI Chatbot backend is running!"}
 
 router_agent = RouterAgent(groq_api_key)
 #groq api wagera ham code ke andar hi fix kardenge (init ke time i mean)
@@ -1035,22 +1024,3 @@ async def route_handler(
         }),
         media_type="application/json"
     )
-
-# import uvicorn
-# from pyngrok import ngrok
-# import nest_asyncio
-# !ngrok authtoken ngrok_auth_token
-# # Allow async in Colab
-# nest_asyncio.apply()
-
-# # Start ngrok tunnel
-# public_url = ngrok.connect(8000)
-# print("Public URL:", public_url)
-
-# # Run FastAPI server
-# uvicorn.run(app, host="0.0.0.0", port=8000)
-
-# router=RouterAgent(grok_api_key)
-# prompt=input("Prompt")
-# file_path="/content/question_paper.pdf"
-# router.route(prompt , file=file_path)
