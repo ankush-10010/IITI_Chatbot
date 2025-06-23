@@ -40,16 +40,11 @@ import io
 
 from pymongo import MongoClient
 import os
-mongo_uri = os.getenv("MONGO_URI")
-groq_api_key = os.getenv("GROQ_API_KEY")
-ngrok_auth_token = os.getenv("NGROK_AUTH_TOKEN")
-groq_link = os.getenv("GROQ_LINK")
-
 
 class QueryBot:
     def __init__(self,
                  embedding_model="all-MiniLM-L6-v2",
-                 groq_api_key=groq_api_key,
+                 groq_api_key="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",
                  model_name="llama-3.1-8b-instant",
                  groq_api_url="https://api.groq.com/openai/v1/chat/completions"):
 
@@ -68,7 +63,7 @@ class QueryBot:
         try:
             # Fix: Use the properly formatted connection string
             print("Attempting to connect to MongoDB...")
-            client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+            client = MongoClient("mongodb+srv://ankush_10010:hl9B_iFzL%5DBH%3BK2%3F@iititutor.rhtimwk.mongodb.net/?retryWrites=true&w=majority&appName=IITITutor", serverSelectionTimeoutMS=5000)
 
             # Test the connection
             client.admin.command('ping')
@@ -182,7 +177,7 @@ class QueryBot:
 
 class QuestionPaperBot:
     def __init__(self, groq_api_key=None):
-        self.api_key =os.getenv("GROQ_API_KEY")
+        self.api_key = groq_api_key or os.getenv("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")
         self.client = OpenAI(api_key=self.api_key, base_url="https://api.groq.com/openai/v1")
 
     async def pdf_to_images(self, pdf_path):
@@ -426,7 +421,7 @@ from typing import List, Dict, Optional
 
 class Scheduler:
     def __init__(self, api_key: Optional[str] = None, model_name: str = "llama-3.1-8b-instant"):
-        self.GROQ_API_KEY =os.getenv("GROQ_API_KEY")
+        self.GROQ_API_KEY = api_key or os.getenv("GROQ_API_KEY")
         if not self.GROQ_API_KEY:
             raise ValueError("GROQ_API_KEY not found. Please set it as an environment variable or pass it to the Scheduler constructor.")
 
@@ -712,7 +707,7 @@ import requests
 
 class RouterAgent:
     def __init__(self, groq_api_key=None, model="llama-3.1-8b-instant"):
-        self.api_key = os.getenv("GROQ_API_KEY")
+        self.api_key = groq_api_key or os.getenv("gsk_L6hGDma7xThcMjstt7GEQKzvw8PWEb")
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
         self.model = model
 
@@ -839,7 +834,7 @@ class RouterAgent:
         aur ek daily ki schedule karne wali , so we will take the user prompt and see ki wo kiss type  ka
         schedule banana chah rha 1day or 1 week and call the fucntuons on that basis"""
         try:
-            scheduler_bot = Scheduler(self.api_key)
+            scheduler_bot = Scheduler("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")
             result = await scheduler_bot.run_scheduler(prompt)
             return result
         except Exception as e:
@@ -883,8 +878,12 @@ app.add_middleware(
 )
 
 
+# mongo_client = motor.motor_asyncio.AsyncIOMotorClient("mongodb+srv://ankush_10010:hl9B_iFzL%5DBH%3BK2%3F@iititutor.rhtimwk.mongodb.net/?retryWrites=true&w=majority&appName=IITITutor")
+# db = mongo_client["mydb"]
+# pdfs_collection = db["pdfs"]
 
-router_agent = RouterAgent(groq_api_key)
+
+router_agent = RouterAgent("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")
 #groq api wagera ham code ke andar hi fix kardenge (init ke time i mean)
 @app.post("/route")
 async def route_handler(
