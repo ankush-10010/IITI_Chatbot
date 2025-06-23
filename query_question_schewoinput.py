@@ -895,7 +895,7 @@ app.add_middleware(
 def root():
     return {"message": "🚀 IITI Chatbot backend is running!"}
 
-router_agent = RouterAgent(self.api_key)
+router_agent = RouterAgent(groq_api_key)
 #groq api wagera ham code ke andar hi fix kardenge (init ke time i mean)
 @app.post("/route")
 async def route_handler(
