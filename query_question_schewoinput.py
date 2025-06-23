@@ -1040,12 +1040,12 @@ async def route_handler(
 # # Allow async in Colab
 # nest_asyncio.apply()
 
-# Start ngrok tunnel
-public_url = ngrok.connect(8000)
-print("Public URL:", public_url)
+# # Start ngrok tunnel
+# public_url = ngrok.connect(8000)
+# print("Public URL:", public_url)
 
-# Run FastAPI server
-uvicorn.run(app, host="0.0.0.0", port=8000)
+# # Run FastAPI server
+# uvicorn.run(app, host="0.0.0.0", port=8000)
 
 # router=RouterAgent(grok_api_key)
 # prompt=input("Prompt")
