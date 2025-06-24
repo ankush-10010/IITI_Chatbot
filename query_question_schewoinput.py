@@ -1,44 +1,19 @@
-
 import os
 import json
 import re
-import numpy as np
-import faiss
-from sentence_transformers import SentenceTransformer
-from difflib import get_close_matches
-
-from PIL import Image
-from pdf2image import convert_from_path
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-import pytesseract
 from openai import OpenAI
 
-import requests
-from typing import Optional, List, Dict
-from datetime import datetime, timedelta
-import json
-
+from typing import Optional
 # Google Calendar API integration
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-GOOGLE_CALENDAR_AVAILABLE = True # Assume available after removing error handling for import
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
 import httpx
 import io
 
-from pymongo import MongoClient
-from typing import List, Dict, Optional
-
-
 import shutil
 import tempfile
-
+from reportlab.lib.pagesizes import A4
 from fastapi import FastAPI, File, UploadFile, Form , Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -65,6 +40,7 @@ class QueryBot:
         # with open(self.JSON_FILE, "r", encoding="utf-8") as f:
         #     raw_courses = json.load(f)
         try:
+            from pymongo import MongoClient
             # Fix: Use the properly formatted connection string
             print("Attempting to connect to MongoDB...")
             client = MongoClient("mongodb+srv://ankush_10010:hl9B_iFzL%5DBH%3BK2%3F@iititutor.rhtimwk.mongodb.net/?retryWrites=true&w=majority&appName=IITITutor", serverSelectionTimeoutMS=5000)
@@ -121,6 +97,9 @@ class QueryBot:
         return chunks, metadata
 
     def build_faiss_index(self, chunks):
+        import faiss
+        from sentence_transformers import SentenceTransformer
+        import numpy as np
         model = SentenceTransformer(self.EMBEDDING_MODEL)
         embeddings = model.encode(chunks, show_progress_bar=True)
         index = faiss.IndexFlatL2(len(embeddings[0]))
@@ -185,6 +164,7 @@ class QuestionPaperBot:
         self.client = OpenAI(api_key=self.api_key, base_url="https://api.groq.com/openai/v1")
 
     async def pdf_to_images(self, pdf_path):
+        from pdf2image import convert_from_path
         loop = asyncio.get_event_loop()
         with ThreadPoolExecutor() as pool:
             images = await loop.run_in_executor(pool, convert_from_path, pdf_path, 300)
@@ -195,6 +175,8 @@ class QuestionPaperBot:
             return len(images)
 
     async def extract_text(self, num):
+        import pytesseract
+        from PIL import Image
         loop = asyncio.get_event_loop()
         async def process_image(i):
             image = Image.open(f"/content/Page_{i+1}.jpg")
@@ -305,7 +287,8 @@ Give your output in the same format as the input."""
         # return result
 
     def text_to_formatted_pdf(self, text, filename="generated_pdf.pdf"):
-
+      from reportlab.lib.pagesizes import A4
+      from reportlab.pdfgen import canvas
       buffer = io.BytesIO()
       c = canvas.Canvas(buffer, pagesize=A4)
       width, height = A4
@@ -351,6 +334,8 @@ Give your output in the same format as the input."""
          "pdf_file" : buffer
       }
     def wrap_text(self,text, canvas_obj, font_name, font_size, max_width):
+      from reportlab.lib.pagesizes import A4
+      from reportlab.pdfgen import canvas
       """
       Wrap a single string into multiple lines so it fits within max_width.
       Returns a list of wrapped lines.
@@ -370,6 +355,7 @@ Give your output in the same format as the input."""
           lines.append(current_line)
       return lines
     def split_lines_to_fit_page(self,lines, font_name="Times-Roman", font_size=11, page_size=A4, margin=50):
+      from reportlab.pdfgen import canvas
       """
       Takes a list of strings (lines of text) and returns a new list
       where long lines are split so they fit on the PDF page.
