@@ -1023,3 +1023,10 @@ async def route_handler(
         }),
         media_type="application/json"
     )
+
+import os
+import uvicorn
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("query_question_schewoinput:app", host="0.0.0.0", port=port)
