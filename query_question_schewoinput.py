@@ -1029,4 +1029,6 @@ import uvicorn
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
+    print("PORT from os.environ:", os.environ.get("PORT"))
+    print("ALL ENV VARS:", dict(os.environ))
     uvicorn.run("query_question_schewoinput:app", host="0.0.0.0", port=port)
