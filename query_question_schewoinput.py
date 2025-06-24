@@ -30,8 +30,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 GOOGLE_CALENDAR_AVAILABLE = True # Assume available after removing error handling for import
-
-from datetime import datetime
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
@@ -39,7 +37,17 @@ import httpx
 import io
 
 from pymongo import MongoClient
-import os
+from typing import List, Dict, Optional
+
+
+import shutil
+import tempfile
+
+from fastapi import FastAPI, File, UploadFile, Form , Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, StreamingResponse
+
+import uvicorn
 
 class QueryBot:
     def __init__(self,
@@ -412,12 +420,6 @@ Give your output in the same format as the input."""
   # bot = QuestionPaperBot(groq_api_key="gsk_UZKlnGPiU2c5uqS")
   # bot.generate_question_paper(pdf_path="/content/Eco_Paper.pdf")
 
-import os
-import re
-import requests
-import json
-from datetime import datetime, timedelta
-from typing import List, Dict, Optional
 
 class Scheduler:
     def __init__(self, api_key: Optional[str] = None, model_name: str = "llama-3.1-8b-instant"):
@@ -699,11 +701,6 @@ Ensure every scheduled item has a clear start and end time.
 # scheduler_bot=Scheduler("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")
 # scheduler_bot.main("i want to make a schedule for today , i have to go to gym for 2hours , study for 3 hours")
 
-import re
-from datetime import datetime
-
-import os
-import requests
 
 class RouterAgent:
     def __init__(self, groq_api_key=None, model="llama-3.1-8b-instant"):
@@ -853,18 +850,6 @@ class RouterAgent:
         except Exception as e:
             return {"error": f"Failed to process query: {str(e)}"}
 
-import shutil
-import tempfile
-from fastapi import FastAPI, Response
-import io
-import json
-# import motor.motor_asyncio  # for MongoDB
-# from bson import ObjectId
-
-from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-from fastapi.responses import JSONResponse, StreamingResponse
 
 app = FastAPI()
 
@@ -1024,8 +1009,7 @@ async def route_handler(
         media_type="application/json"
     )
 
-import os
-import uvicorn
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
