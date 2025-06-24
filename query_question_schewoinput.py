@@ -1,7 +1,3 @@
-import torch
-import gc
-gc.collect()
-torch.cuda.empty_cache()
 
 import os
 import json
